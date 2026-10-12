@@ -12,7 +12,7 @@ android {
     defaultConfig {
         versionCode = 252
         versionName = "1.17.0" // Always remember to update Cores Tag!
-        applicationId = "com.swordfish.lemuroid"
+        applicationId = "com.ioncelciuc.retrodroid"
     }
     flavorDimensions += listOf("opensource", "cores")
 
@@ -96,7 +96,7 @@ android {
             isMinifyEnabled = true
             signingConfig = signingConfigs["release"]
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            resValue("string", "lemuroid_name", "Lemuroid")
+            resValue("string", "lemuroid_name", "RetroDroid")
         }
         getByName("debug") {
             applicationIdSuffix = ".debug"

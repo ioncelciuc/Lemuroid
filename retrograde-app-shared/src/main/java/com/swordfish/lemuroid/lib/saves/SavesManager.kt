@@ -9,6 +9,7 @@ import com.swordfish.lemuroid.lib.storage.DirectoriesManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import com.swordfish.lemuroid.lib.library.CoreID
 
 class SavesManager(private val directoriesManager: DirectoriesManager) {
     suspend fun getSaveRAM(
@@ -18,7 +19,11 @@ class SavesManager(private val directoriesManager: DirectoriesManager) {
         return withContext(Dispatchers.IO) {
             val result =
                 runCatchingWithRetry(FILE_ACCESS_RETRIES) {
-                    val saveFile = getSaveFile(getSaveRAMFileName(game))
+                    val saveFile =
+                        getSaveFile(
+                            getSaveRAMFileName(game),
+                            systemCoreConfig.coreID.coreName,
+                        )
                     if (saveFile.exists() && saveFile.length() > 0) {
                         saveFile.readBytes()
                     } else {
@@ -33,6 +38,7 @@ class SavesManager(private val directoriesManager: DirectoriesManager) {
     suspend fun setSaveRAM(
         game: Game,
         data: ByteArray,
+        coreID: CoreID,
     ) {
         withContext(Dispatchers.IO) {
             val result =
@@ -41,24 +47,31 @@ class SavesManager(private val directoriesManager: DirectoriesManager) {
                         return@runCatchingWithRetry
                     }
 
-                    val saveFile = getSaveFile(getSaveRAMFileName(game))
+                    val saveFile = getSaveFile(getSaveRAMFileName(game), coreID.coreName)
                     saveFile.writeBytesAtomic(data)
                 }
             result.getOrNull()
         }
     }
 
-    suspend fun getSaveRAMInfo(game: Game): SaveInfo {
+    suspend fun getSaveRAMInfo(
+        game: Game,
+        coreID: CoreID,
+    ): SaveInfo {
         return withContext(Dispatchers.IO) {
-            val saveFile = getSaveFile(getSaveRAMFileName(game))
+            val saveFile = getSaveFile(getSaveRAMFileName(game), coreID.coreName)
             val fileExists = saveFile.exists() && saveFile.length() > 0
             SaveInfo(fileExists, saveFile.lastModified())
         }
     }
 
-    private suspend fun getSaveFile(fileName: String): File {
+    private suspend fun getSaveFile(
+        fileName: String,
+        coreName: String,
+    ): File {
         return withContext(Dispatchers.IO) {
-            val savesDirectory = directoriesManager.getSavesDirectory()
+            val savesDirectory = File(directoriesManager.getSavesDirectory(), coreName)
+            savesDirectory.mkdirs()
             File(savesDirectory, fileName)
         }
     }

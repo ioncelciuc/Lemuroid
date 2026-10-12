@@ -75,6 +75,10 @@ import de.charlex.compose.material3.HtmlText
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import javax.inject.Inject
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 
 @OptIn(DelicateCoroutinesApi::class)
 class MainActivity : RetrogradeComponentActivity(), BusyActivity {
@@ -122,6 +126,19 @@ class MainActivity : RetrogradeComponentActivity(), BusyActivity {
         setContent {
             val navController = rememberNavController()
             MainScreen(navController)
+        }
+
+        requestAllFilesAccessIfNeeded()
+    }
+
+    private fun requestAllFilesAccessIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                    Uri.parse("package:$packageName"),
+                ),
+            )
         }
     }
 

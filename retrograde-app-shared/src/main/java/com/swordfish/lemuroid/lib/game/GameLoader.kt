@@ -125,7 +125,10 @@ class GameLoader(
                         .toTypedArray()
 
                 val systemDirectory = directoriesManager.getSystemDirectory()
-                val savesDirectory = directoriesManager.getSavesDirectory()
+                val savesDirectory =
+                    File(directoriesManager.getSavesDirectory(), systemCoreConfig.coreID.coreName).apply {
+                        mkdirs()
+                    }
 
                 emit(
                     LoadingState.Ready(

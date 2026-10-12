@@ -23,7 +23,7 @@ class SavesCoherencyEngine(val savesManager: SavesManager, val statesManager: St
             if (sramTimestampOverride != null) {
                 SaveInfo(true, sramTimestampOverride)
             } else {
-                savesManager.getSaveRAMInfo(game)
+                savesManager.getSaveRAMInfo(game, coreID)
             }
         val autoSave = statesManager.getAutoSaveInfo(game, coreID)
         return autoSRAM.exists && autoSave.exists && autoSRAM.date > autoSave.date + TOLERANCE
