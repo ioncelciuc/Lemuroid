@@ -49,6 +49,7 @@ class SavesManager(private val directoriesManager: DirectoriesManager) {
 
                     val saveFile = getSaveFile(getSaveRAMFileName(game), coreID.coreName)
                     saveFile.writeBytesAtomic(data)
+                    saveFile.setLastModified(System.currentTimeMillis())
                 }
             result.getOrNull()
         }
